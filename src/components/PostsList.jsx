@@ -6,32 +6,34 @@ import { useState } from "react";
 import Modal from "./Modal";
 
 const PostsList = ({ modalIsVisible, onStopPosting }) => {
-  const [textArea, setTextArea] = useState("");
-  const [author, setAuthor] = useState("");
+  const [posts, setPosts] = useState([]);
 
-  const bodyChangeHandler = (event) => {
-    setTextArea(event.target.value);
-  };
-
-  const authorChange = (event) => {
-    setAuthor(event.target.value);
+  const addPostHandler = (postData) => {
+    setPosts((existingPosts) => [postData, ...existingPosts]);
   };
 
   return (
     <>
       {modalIsVisible && (
         <Modal onClose={onStopPosting}>
-          <NewPost
-            onBodyChange={bodyChangeHandler}
-            onAuthorChange={authorChange}
-            onCancel={onStopPosting}
-          />
+          <NewPost onCancel={onStopPosting} onAddPost={addPostHandler} />
         </Modal>
       )}
-      <ul className={classes.posts}>
-        <Post author={author} body={textArea} />
-        <Post author="Manuel" body="Learning React is awesome too" />
-      </ul>
+      {posts.length > 0 && (
+        <ul className={classes.posts}>
+          {posts.map((post) => (
+            <>
+              <Post key={post.author} author={post.author} body={post.body} />
+            </>
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>There are no posts yet</h2>
+          <p>Start adding some</p>
+        </div>
+      )}
     </>
   );
 };
